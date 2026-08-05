@@ -1,0 +1,24 @@
+# Fully pinned test toolchain for the runlog-rollup evaluation environment.
+#
+# Every direct AND transitive dependency is listed with an exact version and a
+# sha256 of the exact artifact, so `pip install --require-hashes` is a
+# bit-for-bit reproducible step. Adding a package without its hash makes the
+# install fail loudly instead of silently drifting.
+#
+# Resolved inside python@sha256:646fb0bca3dd3ea1bcc6feb72c17ed16eed6e10cffc732fcc1478bd3e7f02d7b
+# All artifacts are py3-none-any wheels, so they are platform independent.
+
+pytest==9.1.1 \
+    --hash=sha256:37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c
+pytest-timeout==2.4.0 \
+    --hash=sha256:c42667e5cdadb151aeb5b26d114aff6bdf5a907f176a007a30b940d3d865b5c2
+
+# transitive dependencies of pytest, pinned explicitly
+iniconfig==2.3.0 \
+    --hash=sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12
+packaging==26.3 \
+    --hash=sha256:d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c
+pluggy==1.6.0 \
+    --hash=sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746
+pygments==2.20.0 \
+    --hash=sha256:81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176

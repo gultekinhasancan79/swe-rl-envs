@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "runlog"
+version = "0.4.2"
+description = "Summarize pipeline run-record files into one report."
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# CI does not install the package -- it puts ``src`` on the path (see
+# pytest's ``pythonpath`` below and PYTHONPATH in the container). Local
+# development can still use ``pip install -e .``.
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --strict-markers --strict-config"
+xfail_strict = true

@@ -1,0 +1,4 @@
+{"run_id": "r-20501", "pipeline": "nightly-etl", "status": "passed", "duration_ms": 5000, "owner": "data-platform"}
+{"run_id": "r-20502", "pipeline": "nightly-etl", "status": "passed", "duration_ms":
+{"run_id": "r-20503", "pipeline": "nightly-etl", "status": "exploded", "duration_ms": 10, "owner": "data-platform"}
+{"run_id": "r-20504", "pipeline": "billing-export", "status": "failed", "duration_ms": 42, "owner": "billing"}

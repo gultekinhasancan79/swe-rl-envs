@@ -1,0 +1,8 @@
+# The verifier and everything it checksums must be byte-identical on every
+# platform. CRLF would change sha256 values and break shell scripts in Linux
+# containers, so normalise to LF and never let core.autocrlf touch these.
+* text=auto eol=lf
+*.sh text eol=lf
+*.jsonl text eol=lf
+*.py text eol=lf
+*.patch -text

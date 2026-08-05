@@ -1,0 +1,6 @@
+{"run_id": "r-20423", "pipeline": "search-index", "status": "passed", "duration_ms": 148920, "owner": "search"}
+{"run_id": "r-20424", "pipeline": "billing-export", "status": "failed", "duration_ms": 9877, "owner": "billing"}
+{"run_id": "r-20425", "pipeline": "billing-export", "status": "failed", "duration_ms": 10233, "owner": "billing"}
+{"run_id": "r-20426", "pipeline": "nightly-etl", "status": "timeout", "duration_ms": 900000, "owner": "data-platform"}
+{"run_id": "r-20427", "pipeline": "search-index", "status": "passed", "duration_ms": 151002, "owner": "search"}
+{"run_id": "r-20428", "pipeline": "nightly-etl", "status": "passed", "duration_ms": 81044, "owner": "data-platform"}

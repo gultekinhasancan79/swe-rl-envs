@@ -1,0 +1,5 @@
+{"run_id": "r-20418", "pipeline": "nightly-etl", "status": "passed", "duration_ms": 84120, "owner": "data-platform"}
+{"run_id": "r-20419", "pipeline": "nightly-etl", "status": "passed", "duration_ms": 79310, "owner": "data-platform"}
+{"run_id": "r-20420", "pipeline": "billing-export", "status": "failed", "duration_ms": 12045, "owner": "billing"}
+{"run_id": "r-20421", "pipeline": "nightly-etl", "status": "skipped", "duration_ms": 0, "owner": "data-platform"}
+{"run_id": "r-20422", "pipeline": "search-index", "status": "passed", "duration_ms": 156300, "owner": "search"}

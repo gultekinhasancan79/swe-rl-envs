@@ -1,0 +1,7 @@
+# Nothing outside `repo/` and `requirements.txt` may enter the image.
+# In particular the held-out tests and the verifier must never be baked in.
+*
+!requirements.txt
+!repo/**
+repo/**/__pycache__/**
+repo/**/*.pyc
