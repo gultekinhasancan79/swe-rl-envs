@@ -1,0 +1,42 @@
+cursor-pagination verifier
+repo:    /work/repo
+heldout: /verify/heldout
+python:  Python 3.12.13
+pytest:  pytest 9.1.1
+
+=== [1] Preflight
+    ok: repo and held-out material present
+
+=== [2] No network
+    ok: no egress
+
+=== [3] Visible test files unchanged
+    ok: 4 protected files match their recorded digests
+
+=== [4] No collection-time overrides
+    ok: no added collection-time overrides
+
+=== [5] Source is unaware of the test harness
+    ok: no test-harness awareness in src/
+
+=== [6] Module provenance
+    ok: pagewalk imports from the repo under test only
+
+=== [7] Visible suite
+.............                                                            [100%]
+13 passed in 0.03s
+    ok: visible suite: 13 passed
+
+=== [8] Held-out suite
+..........                                                               [100%]
+10 passed in 0.03s
+    ok: held-out suite: 10 passed
+
+=== [9] Both suites in one process
+.......................                                                  [100%]
+23 passed in 0.05s
+    ok: combined run: 23 passed in a single interpreter
+
+=== summary
+
+RESULT: PASS

@@ -33,36 +33,30 @@ The central requirement is simple:
 
 > A useful benchmark must reject the seeded defect while accepting any genuinely correct fix.
 
-Scoring is therefore based on **behaviour**, not similarity to a reference diff.
+Scoring is based on **behaviour**, not similarity to a reference diff.
 
 ## Why This Matters
 
-Coding-agent benchmarks are easy to make accidentally gameable.
+Coding-agent benchmarks are easy to make accidentally gameable. A candidate patch can appear correct by changing tests, exploiting collection configuration, hard-coding visible fixtures, branching on grader details, fixing only the visible symptom, or relying on environment drift.
 
-A candidate patch can appear correct by:
+These environments make those failure modes observable while keeping the evaluation boundary reproducible and auditable.
 
-- changing or deleting visible tests,
-- exploiting pytest configuration,
-- hard-coding known fixture values,
-- branching on the test harness,
-- fixing only the visible call site,
-- or relying on environment drift.
+## Environments
 
-These environments are built to make those failure modes observable and reproducible.
-
-## Current Environment
-
-| Environment | Seeded defect | Visible tests | Held-out tests | Verifier gates |
+| Environment | Defect class | Visible | Held-out | Gates |
 | --- | --- | ---: | ---: | ---: |
-| [`runlog-rollup`](envs/runlog-rollup) | Shared mutable default accumulator leaks state across calls | 20 | 12 | 9 |
+| [`runlog-rollup`](envs/runlog-rollup) | Python process-lifetime state / shared mutable default | 20 | 12 | 9 |
+| [`cursor-pagination`](envs/cursor-pagination) | Cursor protocol / premature termination on short pages | 13 | 10 | 9 |
 
 ### `runlog-rollup`
 
-The current task presents an internal record-rollup CLI whose aggregation state leaks across calls because of a mutable default argument.
+An internal record-rollup CLI leaks aggregation state between calls because a mutable default accumulator survives for the lifetime of the process. Held-out tests protect both sides of the public accumulator contract, and the strongest gate runs visible + hidden tests in one interpreter.
 
-The visible suite exposes the reported symptom, while the held-out suite tests the broader public contract so that a superficial call-site fix does not pass.
+### `cursor-pagination`
 
-The verifier then evaluates the candidate through integrity and behavioural checks, including a combined single-process run specifically designed to expose process-lifetime state leakage.
+A cursor-based API client incorrectly treats `len(items) < page_size` as terminal even when the backend returns a valid `next_cursor`. The environment tests protocol reasoning across short and empty intermediate pages, duplicate/order preservation, loop detection, and max-page safety.
+
+The two tasks intentionally exercise different bug classes: **language/runtime state semantics** versus **distributed API contract semantics**.
 
 ## Evaluation Model
 
@@ -95,94 +89,97 @@ PASS / FAIL
 
 ### 1. Held-out behavioural tests
 
-Visible tests are not enough when a partial implementation can satisfy the reported symptom without restoring the real contract.
-
-The held-out suite uses different runtime-generated data and validates behaviours the candidate cannot infer from a single checked-in fixture.
+Visible tests are not enough when a partial implementation can satisfy the reported symptom without restoring the real contract. Held-out suites use different data and exercise behaviours the candidate cannot solve by matching a single visible fixture.
 
 ### 2. Layered gates
 
-No single integrity check is treated as load-bearing. Most benchmark-gaming attempts should trip more than one independent gate.
+No single integrity check is load-bearing. Plausible gaming attempts should trip multiple independent controls where possible.
 
 ### 3. Behaviour over diff similarity
 
-The verifier does not require the candidate patch to resemble the golden patch. Any implementation that satisfies the intended contract is allowed to pass.
+The verifier does not require a candidate patch to resemble the golden patch. Any implementation satisfying the intended contract can pass.
 
 ### 4. Reproducible execution
 
-The environment pins important execution inputs so that results do not silently change over time:
+Environments control important execution inputs:
 
-- base image by digest,
-- direct and transitive Python dependencies by version and SHA-256,
+- base images pinned by digest,
+- direct and transitive test dependencies pinned by version and SHA-256,
 - deterministic interpreter settings,
 - no network during task execution or verification,
 - controlled locale/timezone,
 - normalized line endings,
-- and a fresh verification container.
+- and fresh verification containers.
 
 ### 5. Explicit trust boundary
 
-The candidate repository is mounted read-only during scoring. Held-out tests and the verifier are supplied separately, so the scoring boundary is defined by construction rather than by assuming the candidate did not modify external state.
+Candidate repositories are mounted read-only during scoring. Held-out tests and verifiers are supplied separately, making the scoring boundary explicit by construction.
 
 ## Verifier Gates
 
-The current `runlog-rollup` environment uses nine gates:
+Both current environments use the same nine-layer verification shape:
 
 | # | Gate | Purpose |
 | ---: | --- | --- |
 | 1 | Preflight | Reject a broken or incomplete harness |
-| 2 | No network | Ensure execution remains offline |
+| 2 | No network | Keep execution offline |
 | 3 | Protected-file integrity | Reject modified/deleted visible tests and fixtures |
 | 4 | No collection-time overrides | Detect added pytest/import hooks |
-| 5 | Harness-awareness check | Detect source code branching on grader details |
-| 6 | Module provenance | Ensure the package resolves from the candidate repo |
+| 5 | Harness-awareness check | Detect source branching on grader details |
+| 6 | Module provenance | Ensure imports resolve from the candidate repo |
 | 7 | Visible suite | Validate the reported task behaviour |
 | 8 | Held-out suite | Validate unseen parts of the contract |
-| 9 | Combined process run | Expose fixes that only reset state between suites/files |
+| 9 | Combined process run | Validate visible + hidden behaviour together |
 
 ## Evidence
 
-The repository includes reviewable evidence under:
+Each environment keeps its reference fix and evidence under `golden/`.
 
-```text
-envs/runlog-rollup/golden/evidence/
-├── verify.log       # full passing verifier transcript
-├── run.md           # image / version / digest metadata
-└── adversarial.md   # benchmark-gaming attempts and the gates that reject them
-```
+`runlog-rollup` currently records:
 
-The current golden run records:
+- **20 / 20 visible tests**
+- **12 / 12 held-out tests**
+- **32 / 32 combined tests**
+- **9 / 9 verifier gates**
 
-- **20 / 20 visible tests passed**
-- **12 / 12 held-out tests passed**
-- **32 / 32 combined tests passed in one interpreter**
-- **9 / 9 verifier gates passed**
+`cursor-pagination` is configured for:
+
+- **13 visible tests**
+- **10 held-out tests**
+- **23 combined tests**
+- **9 verifier gates**
+
+The matrix `Benchmark CI` workflow builds and verifies each environment independently before changes can be merged.
 
 ## Repository Layout
 
 ```text
 envs/
-└── runlog-rollup/
-    ├── repo/              # codebase visible to the agent
-    ├── task.md            # task statement
-    ├── heldout/           # hidden acceptance tests + integrity manifest
-    ├── verify.sh          # scoring harness
-    ├── golden/            # reference fix + evidence
-    ├── Dockerfile
-    └── requirements.txt
+├── runlog-rollup/
+│   ├── repo/
+│   ├── task.md
+│   ├── heldout/
+│   ├── verify.sh
+│   └── golden/
+└── cursor-pagination/
+    ├── repo/
+    ├── task.md
+    ├── heldout/
+    ├── verify.sh
+    └── golden/
 ```
 
 ## Start Here
 
-For the full environment contract, threat model, verifier logic, reproducibility details, and execution commands, see:
-
-**[`envs/runlog-rollup/README.md`](envs/runlog-rollup/README.md)**
+- [`runlog-rollup` environment contract](envs/runlog-rollup/README.md)
+- [`cursor-pagination` environment contract](envs/cursor-pagination/README.md)
 
 ## Contributing
 
-New environments and verifier improvements should preserve the repository's measurement standards around held-out behaviour, anti-gaming checks, reproducibility, and auditable golden evidence.
+New environments and verifier improvements should preserve the repository's standards around held-out behaviour, anti-gaming checks, reproducibility, and auditable golden evidence.
 
 See **[`CONTRIBUTING.md`](CONTRIBUTING.md)** for the benchmark-authoring checklist and pull-request expectations.
 
 ## Current Direction
 
-The next step for this repository is expanding from a single environment into a broader suite of agentic coding tasks with varied defect classes, while preserving the same reproducibility and anti-gaming principles.
+The next step is expanding the suite with additional defect classes while keeping the same reproducibility, trust-boundary, and anti-gaming standards across every environment.

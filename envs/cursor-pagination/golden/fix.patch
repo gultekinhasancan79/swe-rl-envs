@@ -1,0 +1,16 @@
+diff --git a/src/pagewalk/walk.py b/src/pagewalk/walk.py
+--- a/src/pagewalk/walk.py
++++ b/src/pagewalk/walk.py
+@@ -39,12 +39,6 @@
+ 
+         collected.extend(page.items)
+ 
+-        # BUG: a short page is not necessarily terminal. Filtering and shard
+-        # boundaries can produce fewer than page_size items while next_cursor
+-        # still points to more data.
+-        if len(page.items) < page_size:
+-            return collected
+-
+         next_cursor = page.next_cursor
+         if next_cursor is None:
+             return collected
