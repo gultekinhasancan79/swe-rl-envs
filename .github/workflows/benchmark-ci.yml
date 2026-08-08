@@ -10,24 +10,31 @@ permissions:
   contents: read
 
 jobs:
-  verify-runlog-rollup:
+  verify:
+    name: Verify ${{ matrix.environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        environment:
+          - runlog-rollup
+          - cursor-pagination
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
       - name: Build pinned task image
-        working-directory: envs/runlog-rollup
-        run: docker build -t runlog-rollup:ci .
+        working-directory: envs/${{ matrix.environment }}
+        run: docker build -t "${{ matrix.environment }}:ci" .
 
       - name: Materialize golden candidate
-        working-directory: envs/runlog-rollup
+        working-directory: envs/${{ matrix.environment }}
         run: bash golden/apply.sh "$RUNNER_TEMP/golden-candidate"
 
       - name: Run all verifier gates
-        working-directory: envs/runlog-rollup
+        working-directory: envs/${{ matrix.environment }}
         run: |
           docker run --rm --network none \
             --read-only --tmpfs /tmp:rw,exec,nosuid,size=256m \
@@ -36,4 +43,4 @@ jobs:
             -v "$RUNNER_TEMP/golden-candidate:/work/repo:ro" \
             -v "$PWD/heldout:/verify/heldout:ro" \
             -v "$PWD/verify.sh:/verify/verify.sh:ro" \
-            runlog-rollup:ci bash /verify/verify.sh
+            "${{ matrix.environment }}:ci" bash /verify/verify.sh
