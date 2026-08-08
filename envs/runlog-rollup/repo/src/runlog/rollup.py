@@ -49,14 +49,14 @@ class Rollup:
 
 
 def accumulate_statuses(
-    records: Iterable[RunRecord], into: Counter | None = None
+    records: Iterable[RunRecord], into: Counter = Counter()
 ) -> Counter:
     """Tally ``records`` by status.
 
     ``into`` lets a caller fold several batches of records into one counter;
     when it is omitted the tally starts from empty.
     """
-    counts = Counter() if into is None else into
+    counts = into
     for record in records:
         counts[record.status] += 1
     return counts
