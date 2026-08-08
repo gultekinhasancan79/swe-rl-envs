@@ -1,0 +1,39 @@
+name: Benchmark CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-runlog-rollup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build pinned task image
+        working-directory: envs/runlog-rollup
+        run: docker build -t runlog-rollup:ci .
+
+      - name: Materialize golden candidate
+        working-directory: envs/runlog-rollup
+        run: bash golden/apply.sh "$RUNNER_TEMP/golden-candidate"
+
+      - name: Run all verifier gates
+        working-directory: envs/runlog-rollup
+        run: |
+          docker run --rm --network none \
+            --read-only --tmpfs /tmp:rw,exec,nosuid,size=256m \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --memory 1g --pids-limit 256 \
+            -v "$RUNNER_TEMP/golden-candidate:/work/repo:ro" \
+            -v "$PWD/heldout:/verify/heldout:ro" \
+            -v "$PWD/verify.sh:/verify/verify.sh:ro" \
+            runlog-rollup:ci bash /verify/verify.sh
