@@ -1,0 +1,25 @@
+diff --git a/src/runlog/rollup.py b/src/runlog/rollup.py
+index 1ca6f36..bd7b753 100644
+--- a/src/runlog/rollup.py
++++ b/src/runlog/rollup.py
+@@ -49,14 +49,18 @@ class Rollup:
+ 
+ 
+ def accumulate_statuses(
+-    records: Iterable[RunRecord], into: Counter = Counter()
++    records: Iterable[RunRecord], into: Counter | None = None
+ ) -> Counter:
+     """Tally ``records`` by status.
+ 
+     ``into`` lets a caller fold several batches of records into one counter;
+     when it is omitted the tally starts from empty.
++
++    ``into`` must default to ``None`` rather than to ``Counter()``: a default
++    argument is evaluated once when the function is defined, so a literal
++    counter here would be shared by every call that omits it.
+     """
+-    counts = into
++    counts = Counter() if into is None else into
+     for record in records:
+         counts[record.status] += 1
+     return counts
