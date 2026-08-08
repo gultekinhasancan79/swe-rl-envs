@@ -5,6 +5,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/gultekinhasancan79/swe-rl-envs/actions/workflows/benchmark-ci.yml"><img src="https://github.com/gultekinhasancan79/swe-rl-envs/actions/workflows/benchmark-ci.yml/badge.svg" alt="Benchmark CI"></a>
   <img src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/Docker-Isolated%20Evaluation-2496ED?logo=docker&logoColor=white" alt="Docker">
   <img src="https://img.shields.io/badge/Pytest-Held--out%20Tests-0A9EDC?logo=pytest&logoColor=white" alt="Pytest">
