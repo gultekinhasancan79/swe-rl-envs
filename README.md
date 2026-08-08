@@ -177,6 +177,12 @@ For the full environment contract, threat model, verifier logic, reproducibility
 
 **[`envs/runlog-rollup/README.md`](envs/runlog-rollup/README.md)**
 
+## Contributing
+
+New environments and verifier improvements should preserve the repository's measurement standards around held-out behaviour, anti-gaming checks, reproducibility, and auditable golden evidence.
+
+See **[`CONTRIBUTING.md`](CONTRIBUTING.md)** for the benchmark-authoring checklist and pull-request expectations.
+
 ## Current Direction
 
 The next step for this repository is expanding from a single environment into a broader suite of agentic coding tasks with varied defect classes, while preserving the same reproducibility and anti-gaming principles.
