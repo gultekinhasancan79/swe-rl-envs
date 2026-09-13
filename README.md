@@ -215,3 +215,10 @@ See **[`CONTRIBUTING.md`](CONTRIBUTING.md)** for the benchmark-authoring checkli
 ## Current Direction
 
 The next step is expanding the suite with additional defect classes while keeping the same reproducibility, trust-boundary, and anti-gaming standards across every environment.
+
+## License
+
+Copyright 2026 Hasancan Gültekin.
+
+The source code and documentation in this repository are licensed under the
+[Apache License, Version 2.0](LICENSE).
