@@ -44,3 +44,28 @@ jobs:
             -v "$PWD/heldout:/verify/heldout:ro" \
             -v "$PWD/verify.sh:/verify/verify.sh:ro" \
             "${{ matrix.environment }}:ci" bash /verify/verify.sh
+
+  walkthrough:
+    name: Reviewer walkthrough
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Check walkthrough failure classification
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Verify seeded, partial and reference candidates
+        run: python3 examples/verification_walkthrough.py --output-dir "$RUNNER_TEMP/cursor-walkthrough"
+
+      - name: Preserve verification logs and metadata
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cursor-pagination-walkthrough
+          path: |
+            ${{ runner.temp }}/cursor-walkthrough/*.log
+            ${{ runner.temp }}/cursor-walkthrough/metadata.json
+          if-no-files-found: ignore
+          retention-days: 30

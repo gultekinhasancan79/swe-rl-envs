@@ -35,6 +35,36 @@ The central requirement is simple:
 
 Scoring is based on **behaviour**, not similarity to a reference diff.
 
+## Quickstart: see a partial fix get rejected
+
+Requires **Git, Python 3.10+ on the host, and Docker running Linux containers**.
+No model or API key is needed. The first image build downloads the pinned toolchain.
+
+```bash
+git clone https://github.com/gultekinhasancan79/swe-rl-envs.git
+cd swe-rl-envs
+python examples/verification_walkthrough.py
+```
+
+Use `python3` if that is your Python command, or `py -3` on Windows. The helper
+creates separate candidate copies and runs the existing `cursor-pagination`
+verifier in a fresh, offline container for each one.
+
+| Authored candidate | Visible tests | Held-out tests | Combined tests | Verifier |
+| --- | ---: | ---: | ---: | --- |
+| Seeded defect | 12/13 | 2/10 | 14/23 | FAIL |
+| Partial fix: still stops on empty pages | **13/13** | **8/10** | 21/23 | **FAIL** |
+| Reference fix | 13/13 | 10/10 | 23/23 | PASS |
+
+Counts are tests passed. The partial fix resolves the visible symptom but loses
+data after an empty intermediate page and can miss a cursor loop. This is a
+verification walkthrough using authored candidates, **not a model-performance result**.
+
+Full transcripts, candidate copies, the image ID, source revision, and input
+hashes are saved under a new `artifacts/walkthrough-*` directory on each run.
+See the [walkthrough and expected output](docs/WALKTHROUGH.md) for the exact
+patches and what the result demonstrates.
+
 ## Why This Matters
 
 Coding-agent benchmarks are easy to make accidentally gameable. A candidate patch can appear correct by changing tests, exploiting collection configuration, hard-coding visible fixtures, branching on grader details, fixing only the visible symptom, or relying on environment drift.
@@ -149,7 +179,9 @@ Each environment keeps its reference fix and evidence under `golden/`.
 - **23 combined tests**
 - **9 verifier gates**
 
-The matrix `Benchmark CI` workflow builds and verifies each environment independently before changes can be merged.
+The matrix `Benchmark CI` workflow builds and verifies each environment independently.
+A separate walkthrough job checks all three cursor candidates and retains their
+transcripts and metadata as a workflow artifact.
 
 ## Repository Layout
 
