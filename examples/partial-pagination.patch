@@ -1,0 +1,8 @@
+diff --git a/src/pagewalk/walk.py b/src/pagewalk/walk.py
+--- a/src/pagewalk/walk.py
++++ b/src/pagewalk/walk.py
+@@ -44,3 +44,3 @@
+         # still points to more data.
+-        if len(page.items) < page_size:
++        if not page.items:
+             return collected

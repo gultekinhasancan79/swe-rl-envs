@@ -87,6 +87,17 @@ Include enough evidence to audit the claim, such as:
 
 ## Running the current benchmark
 
+For a first local review on Windows or Linux, run the
+[three-candidate walkthrough](README.md#quickstart-see-a-partial-fix-get-rejected).
+It checks the seeded defect, an incomplete fix and the reference solution with
+the existing cursor verifier. Changes to the helper should also pass:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+These helper tests are separate from the task's visible and held-out suites.
+
 For `runlog-rollup`, start with:
 
 ```bash
