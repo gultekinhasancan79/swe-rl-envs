@@ -13,6 +13,10 @@
   <img src="https://img.shields.io/badge/Reproducibility-Digest%20Pinned-2ea44f" alt="Reproducibility">
 </p>
 
+![cursor-pagination verifier walkthrough: the seeded defect (12/13 visible, 2/10 held-out) and the partial fix (13/13 visible, 8/10 held-out) both FAIL; the reference fix passes 23/23 combined tests and all nine gates](docs/assets/verification-walkthrough.svg)
+
+Recorded output of [`examples/verification_walkthrough.py`](examples/verification_walkthrough.py) ([v0.1.0](https://github.com/gultekinhasancan79/swe-rl-envs/releases/tag/v0.1.0), `swe-walkthrough-linux.zip`).
+
 ---
 
 ## What This Repository Is
