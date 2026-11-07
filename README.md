@@ -73,7 +73,7 @@ patches and what the result demonstrates.
 
 Coding-agent benchmarks are easy to make accidentally gameable. A candidate patch can appear correct by changing tests, exploiting collection configuration, hard-coding visible fixtures, branching on grader details, fixing only the visible symptom, or relying on environment drift.
 
-These environments make those failure modes observable while keeping the evaluation boundary reproducible and auditable.
+These environments make those failure modes observable while keeping the evaluation boundary reproducible and auditable. [Reward hacking: five strategies and the gates that defeat them](docs/REWARD_HACKING.md) walks through each one, names the gate that stops it, and lists what the gates do not cover.
 
 ## Environments
 
